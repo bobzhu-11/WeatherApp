@@ -9,12 +9,14 @@
 class IHttpRequest;
 class IHttpResponse;
 
-UCLASS()
+UCLASS(Blueprintable)
 class WEATHERAPP_API UWeatherManager : public UObject
 {
 	GENERATED_BODY()
 
 public:
-	void GetWeatherByLocation(FString CityName);
+	UFUNCTION(BlueprintCallable,Category = "Weather")
+	void  GetWeatherByLocation(FString CityName);
+private:
 	void OnWeatherResponseReceived(TSharedPtr<IHttpRequest, ESPMode::ThreadSafe> Request,TSharedPtr<IHttpResponse, ESPMode::ThreadSafe> Response, bool bWasSuccessful);
 };
