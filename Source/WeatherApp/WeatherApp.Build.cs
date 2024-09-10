@@ -9,7 +9,7 @@ public class WeatherApp : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput","HTTP" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine","HTTP","Json" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
