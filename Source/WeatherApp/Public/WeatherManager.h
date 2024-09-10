@@ -9,14 +9,30 @@
 class IHttpRequest;
 class IHttpResponse;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeatherUpdated);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLocationUpdated);
+
 UCLASS(Blueprintable)
 class WEATHERAPP_API UWeatherManager : public UObject
 {
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable,Category = "Weather")
-	void  GetWeatherByLocation(FString CityName);
+	UFUNCTION(BlueprintCallable, Category = "Location")
+	void GetWeatherByLocation(FString CityName);
+	UFUNCTION(BlueprintCallable, Category="Weather")
+	void GetUserLocation();
+	UPROPERTY(BlueprintAssignable, Category = "Location")
+	FOnLocationUpdated OnLocationUpdated;
+	UPROPERTY(BlueprintAssignable, Category = "Weather")
+	FOnWeatherUpdated OnWeatherUpdated;
+	UFUNCTION(BlueprintCallable, Category = "Location")
+	FString GetCachedLocation() const;
+
 private:
-	void OnWeatherResponseReceived(TSharedPtr<IHttpRequest, ESPMode::ThreadSafe> Request,TSharedPtr<IHttpResponse, ESPMode::ThreadSafe> Response, bool bWasSuccessful);
+	void OnLocationResponseReceived(TSharedPtr<IHttpRequest, ESPMode::ThreadSafe> Request,
+								   TSharedPtr<IHttpResponse, ESPMode::ThreadSafe> Response, bool bWasSuccessful);
+	void OnWeatherResponseReceived(TSharedPtr<IHttpRequest, ESPMode::ThreadSafe> Request,
+	                               TSharedPtr<IHttpResponse, ESPMode::ThreadSafe> Response, bool bWasSuccessful);
+	FString CachedLocation= TEXT("");
 };
