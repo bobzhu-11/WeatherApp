@@ -90,7 +90,6 @@ void UWeatherManager::OnWeatherResponseReceived(FHttpRequestPtr Request, FHttpRe
 				int64 Dt = ListItem->GetIntegerField(TEXT("dt"));
 				TSharedPtr<FJsonObject> Main = ListItem->GetObjectField(TEXT("main"));
 				WeatherInfo.Temp = Main->GetNumberField(TEXT("temp"));
-				
 				WeatherInfo.TempMin = Main->GetNumberField(TEXT("temp_min"));
 				WeatherInfo.TempMax = Main->GetNumberField(TEXT("temp_max"));
 				int32 Pressure = Main->GetIntegerField(TEXT("pressure"));
