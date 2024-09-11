@@ -51,7 +51,7 @@ void UWeatherManager::OnLocationResponseReceived(FHttpRequestPtr Request,
 
 		if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
 		{
-			CachedLocation = JsonObject->GetStringField("city");
+			CachedLocation = JsonObject->GetStringField(TEXT("city"));
 			UE_LOG(LogTemp, Log, TEXT("Current City: %s"), *CachedLocation);
 			OnLocationUpdated.Broadcast();
 		}
@@ -79,25 +79,23 @@ void UWeatherManager::OnWeatherResponseReceived(FHttpRequestPtr Request, FHttpRe
 
 		if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
 		{
-			const TSharedPtr<FJsonObject>* MainObject;
-			if (JsonObject->TryGetObjectField(TEXT("main"), MainObject))
+			FString Cod = JsonObject->GetStringField(TEXT("cod"));
+			int32 Cnt = JsonObject->GetIntegerField(TEXT("cnt"));
+
+			const TArray<TSharedPtr<FJsonValue>>& List = JsonObject -> GetArrayField(TEXT("list"));
+			for(int32 i = 0;i<List.Num();i++)
 			{
-				if (JsonObject->TryGetObjectField(TEXT("main"), MainObject))
-				{
-					float Temperature = ((*MainObject)->GetNumberField(TEXT("temp")) - 273.15f);
-					UE_LOG(LogTemp, Log, TEXT("Temperature: %f ℃"), Temperature);
-				}
+				FWeatherInfo WeatherInfo;
+				TSharedPtr<FJsonObject> ListItem = List[i]->AsObject();
+				int64 Dt = ListItem->GetIntegerField(TEXT("dt"));
+				TSharedPtr<FJsonObject> Main = ListItem->GetObjectField(TEXT("main"));
+				WeatherInfo.Temp = Main->GetNumberField(TEXT("temp"));
 				
-				const TArray<TSharedPtr<FJsonValue>>* WeatherArray;
-				if (JsonObject->TryGetArrayField(TEXT("weather"), WeatherArray))
-				{
-					if ((*WeatherArray).Num() > 0)
-					{
-						TSharedPtr<FJsonObject> WeatherObject = (*WeatherArray)[0]->AsObject();
-						FString Description = WeatherObject->GetStringField(TEXT("description"));
-						UE_LOG(LogTemp, Log, TEXT("Weather: %s"), *Description);
-					}
-				}
+				WeatherInfo.TempMin = Main->GetNumberField(TEXT("temp_min"));
+				WeatherInfo.TempMax = Main->GetNumberField(TEXT("temp_max"));
+				int32 Pressure = Main->GetIntegerField(TEXT("pressure"));
+				float FeelsLike = Main->GetNumberField(TEXT("feels_like"));
+				WeatherInfos.Add(WeatherInfo);
 			}
 			OnWeatherUpdated.Broadcast();
 		}
