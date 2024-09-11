@@ -94,9 +94,13 @@ void UWeatherManager::OnCurrentWeatherResponseReceived(FHttpRequestPtr Request,
 		if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
 		{
 			TSharedPtr<FJsonObject> Main = JsonObject->GetObjectField(TEXT("main"));
+			TArray<TSharedPtr<FJsonValue>> WeatherArray = JsonObject->GetArrayField(TEXT("weather"));
+			TSharedPtr<FJsonObject> WeatherObject = WeatherArray[0]->AsObject();
+			
 			CurrentWeatherInfo.Temp = (Main->GetNumberField(TEXT("temp")))-273.15f;
 			CurrentWeatherInfo.TempMin = (Main->GetNumberField(TEXT("temp_min")))-273.15f;
 			CurrentWeatherInfo.TempMax = (Main->GetNumberField(TEXT("temp_max")))-273.15f;
+			CurrentWeatherInfo.Icon = WeatherObject->GetStringField(TEXT("icon"));
 
 			OnCurrentWeatherUpdated.Broadcast();
 		}
