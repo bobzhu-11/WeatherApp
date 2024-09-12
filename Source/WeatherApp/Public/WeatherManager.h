@@ -13,6 +13,17 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLocationUpdated);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeatherUpdated);
 
 USTRUCT(BlueprintType)
+struct FLocationInfo
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="location")
+	FString Country;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="location")
+	FString City;
+};
+
+USTRUCT(BlueprintType)
 struct FWeatherInfo
 {
 	GENERATED_BODY()
@@ -27,6 +38,8 @@ struct FWeatherInfo
 	FString Dates;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weather")
 	FString Icon;
+	
+	FWeatherInfo(): Temp(0.0f),TempMin(0.0f),TempMax(0.0f){}
 };
 
 UCLASS(Blueprintable)
@@ -49,8 +62,8 @@ public:
 	TArray<FWeatherInfo> WeatherForecastInfos;
 	UPROPERTY(BlueprintAssignable, Category = "Location")
 	FOnLocationUpdated OnLocationUpdated;
-	UFUNCTION(BlueprintCallable, Category = "Location")
-	FString GetCachedLocation() const;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Location")
+	FLocationInfo UserLocationInfo;
 	UFUNCTION(BlueprintCallable, Category="Location")
 	void GetUserLocation();
 
@@ -62,5 +75,4 @@ private:
 	void OnWeatherForecastResponseReceived(TSharedPtr<IHttpRequest, ESPMode::ThreadSafe> Request,
 	                                       TSharedPtr<IHttpResponse, ESPMode::ThreadSafe> Response,
 	                                       bool bWasSuccessful);
-	FString CachedLocation = TEXT("");
 };

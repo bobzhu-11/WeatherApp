@@ -50,10 +50,6 @@ void UWeatherManager::GetUserLocation()
 	Request->ProcessRequest();
 }
 
-FString UWeatherManager::GetCachedLocation() const
-{
-	return *CachedLocation;
-}
 
 void UWeatherManager::OnLocationResponseReceived(FHttpRequestPtr Request,
                                                  FHttpResponsePtr Response, bool bWasSuccessful)
@@ -67,8 +63,8 @@ void UWeatherManager::OnLocationResponseReceived(FHttpRequestPtr Request,
 
 		if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
 		{
-			CachedLocation = JsonObject->GetStringField(TEXT("city"));
-			UE_LOG(LogTemp, Log, TEXT("Current City: %s"), *CachedLocation);
+			UserLocationInfo.Country = JsonObject->GetStringField(TEXT("country"));
+			UserLocationInfo.City = JsonObject->GetStringField(TEXT("city"));
 			OnLocationUpdated.Broadcast();
 		}
 		else
