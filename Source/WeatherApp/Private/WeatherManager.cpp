@@ -149,6 +149,7 @@ void UWeatherManager::OnWeatherForecastResponseReceived(FHttpRequestPtr Request,
 			}
 			OnWeatherForecastUpdated.Broadcast();
 		}
+
 	}
 	else
 	{
