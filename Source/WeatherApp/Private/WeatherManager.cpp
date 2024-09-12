@@ -90,13 +90,22 @@ void UWeatherManager::OnCurrentWeatherResponseReceived(FHttpRequestPtr Request,
 		if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
 		{
 			TSharedPtr<FJsonObject> Main = JsonObject->GetObjectField(TEXT("main"));
+			TSharedPtr<FJsonObject> Sys = JsonObject->GetObjectField(TEXT("sys"));
 			TArray<TSharedPtr<FJsonValue>> WeatherArray = JsonObject->GetArrayField(TEXT("weather"));
 			TSharedPtr<FJsonObject> WeatherObject = WeatherArray[0]->AsObject();
-			
-			CurrentWeatherInfo.Temp = (Main->GetNumberField(TEXT("temp")))-273.15f;
-			CurrentWeatherInfo.TempMin = (Main->GetNumberField(TEXT("temp_min")))-273.15f;
-			CurrentWeatherInfo.TempMax = (Main->GetNumberField(TEXT("temp_max")))-273.15f;
+
+			CurrentWeatherInfo.Temp = (Main->GetNumberField(TEXT("temp"))) - 273.15f;
+			CurrentWeatherInfo.TempMin = (Main->GetNumberField(TEXT("temp_min"))) - 273.15f;
+			CurrentWeatherInfo.TempMax = (Main->GetNumberField(TEXT("temp_max"))) - 273.15f;
+			CurrentWeatherInfo.FeelsLike = (Main->GetNumberField(TEXT("feels_like"))) - 273.15f;
+			CurrentWeatherInfo.Pressure = Main->GetNumberField(TEXT("pressure"));
+			CurrentWeatherInfo.Humidity = Main->GetNumberField(TEXT("humidity"));
+			CurrentWeatherInfo.Visibility = JsonObject->GetNumberField(TEXT("visibility"));
+			CurrentWeatherInfo.Weather = WeatherObject->GetStringField(TEXT("main"));
 			CurrentWeatherInfo.Icon = WeatherObject->GetStringField(TEXT("icon"));
+			CurrentWeatherInfo.Country = Sys->GetStringField(TEXT("country"));
+			CurrentWeatherInfo.Sunrise = Sys->GetNumberField(TEXT("sunrise"));
+			CurrentWeatherInfo.Sunset = Sys->GetNumberField(TEXT("sunset"));
 
 			OnCurrentWeatherUpdated.Broadcast();
 		}
@@ -127,9 +136,9 @@ void UWeatherManager::OnWeatherForecastResponseReceived(FHttpRequestPtr Request,
 				FWeatherInfo WeatherForecastInfo;
 				TSharedPtr<FJsonObject> ListItem = List[i]->AsObject();
 				TSharedPtr<FJsonObject> Main = ListItem->GetObjectField(TEXT("main"));
-				WeatherForecastInfo.Temp = (Main->GetNumberField(TEXT("temp")))-273.15f;
-				WeatherForecastInfo.TempMin = (Main->GetNumberField(TEXT("temp_min")))-273.15f;
-				WeatherForecastInfo.TempMax = (Main->GetNumberField(TEXT("temp_max")))-273.15f;
+				WeatherForecastInfo.Temp = (Main->GetNumberField(TEXT("temp"))) - 273.15f;
+				WeatherForecastInfo.TempMin = (Main->GetNumberField(TEXT("temp_min"))) - 273.15f;
+				WeatherForecastInfo.TempMax = (Main->GetNumberField(TEXT("temp_max"))) - 273.15f;
 				WeatherForecastInfos.Add(WeatherForecastInfo);
 			}
 			OnWeatherForecastUpdated.Broadcast();
