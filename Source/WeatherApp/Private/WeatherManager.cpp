@@ -136,9 +136,14 @@ void UWeatherManager::OnWeatherForecastResponseReceived(FHttpRequestPtr Request,
 				FWeatherInfo WeatherForecastInfo;
 				TSharedPtr<FJsonObject> ListItem = List[i]->AsObject();
 				TSharedPtr<FJsonObject> Main = ListItem->GetObjectField(TEXT("main"));
+				TArray<TSharedPtr<FJsonValue>> WeatherArray = ListItem->GetArrayField(TEXT("weather"));
+				TSharedPtr<FJsonObject> WeatherObject = WeatherArray[0]->AsObject();
+				
 				WeatherForecastInfo.Temp = (Main->GetNumberField(TEXT("temp"))) - 273.15f;
-				WeatherForecastInfo.TempMin = (Main->GetNumberField(TEXT("temp_min"))) - 273.15f;
-				WeatherForecastInfo.TempMax = (Main->GetNumberField(TEXT("temp_max"))) - 273.15f;
+				WeatherForecastInfo.Weather = WeatherObject->GetStringField(TEXT("main"));
+				WeatherForecastInfo.Icon = WeatherObject->GetStringField(TEXT("icon"));
+				WeatherForecastInfo.Dates = ListItem->GetStringField(TEXT("dt_txt"));
+
 				WeatherForecastInfos.Add(WeatherForecastInfo);
 			}
 			OnWeatherForecastUpdated.Broadcast();
@@ -146,6 +151,6 @@ void UWeatherManager::OnWeatherForecastResponseReceived(FHttpRequestPtr Request,
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to get weather data!"));
+		UE_LOG(LogTemp, Warning, TEXT("Failed to get weather forecast data!"));
 	}
 }

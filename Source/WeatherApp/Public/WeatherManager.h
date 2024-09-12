@@ -56,7 +56,7 @@ struct FWeatherInfo
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weather")
 	FString Icon;
 
-	FWeatherInfo(): Temp(0.0f), TempMin(0.0f), TempMax(0.0f), FeelsLike(0), Pressure(0), Visibility(0), Humidity(0),
+	FWeatherInfo(): Temp(0.0f), TempMin(0.0f), TempMax(0.0f), FeelsLike(0), Pressure(0), Humidity(0), Visibility(0),
 	                Sunrise(0),
 	                Sunset(0)
 	{
