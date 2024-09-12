@@ -130,6 +130,7 @@ void UWeatherManager::OnWeatherForecastResponseReceived(FHttpRequestPtr Request,
 
 		if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
 		{
+			WeatherForecastInfos.Empty(); 
 			const TArray<TSharedPtr<FJsonValue>>& List = JsonObject->GetArrayField(TEXT("list"));
 			for (int32 i = 0; i < List.Num(); i++)
 			{
